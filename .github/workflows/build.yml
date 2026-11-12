@@ -20,9 +20,9 @@ jobs:
       - run: npm install
       - run: mkdir -p www && cp index.html www/index.html
       - run: npx cap add android
-      - run: pip install pillow && python3 make_icon.py
+      - run: pip install pillow && python3 make_icon.py && python3 -c "from PIL import Image; Image.new('RGB',(1024,1024),(31,61,43)).save('assets/icon-background.png')"
         continue-on-error: true
-      - run: npm install --save-dev @capacitor/assets && npx capacitor-assets generate --android --iconBackgroundColor '#1f3d2b' --iconBackgroundColorDark '#1f3d2b'
+      - run: npm install --save-dev @capacitor/assets && npx capacitor-assets generate --android
         continue-on-error: true
       - run: npx cap sync android
       - run: cd android && chmod +x gradlew && ./gradlew assembleDebug
