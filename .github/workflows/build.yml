@@ -3,6 +3,8 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
+permissions:
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,9 +20,15 @@ jobs:
       - run: npm install
       - run: mkdir -p www && cp index.html www/index.html
       - run: npx cap add android
+      - run: pip install pillow && python3 make_icon.py
+        continue-on-error: true
+      - run: npm install --save-dev @capacitor/assets && npx capacitor-assets generate --android --iconBackgroundColor '#1f3d2b' --iconBackgroundColorDark '#1f3d2b'
+        continue-on-error: true
       - run: npx cap sync android
       - run: cd android && chmod +x gradlew && ./gradlew assembleDebug
-      - uses: actions/upload-artifact@v4
+      - run: cp android/app/build/outputs/apk/debug/app-debug.apk kolom-juddho.apk
+      - uses: softprops/action-gh-release@v2
         with:
-          name: kolom-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          tag_name: v1.${{ github.run_number }}
+          name: কলম যুদ্ধ v1.${{ github.run_number }}
+          files: kolom-juddho.apk
